@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Population · 10,000 BC to Present — H Heuristics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500&family=Inter:wght@400;450;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:    #faf7f2;
+    --cream:    #f5f0e8;
+    --surface:  #fefdfb;
+    --border:   #e5ded4;
+    --border2:  #d6cdc0;
+    --ink:      #1c1a17;
+    --ink2:     #5c5750;
+    --ink3:     #8c8680;
+    --navy:     #1a3a5c;
+    --navy-lt:  #e8edf2;
+    --burgundy: #8b1a2b;
+    --burg-lt:  #f9eeef;
+    --teal:     #1a5c5a;
+    --teal-lt:  #e8f2f1;
+    --gold:     #a67c1e;
+    --gold-lt:  #faf3e6;
+    --rule:     1px solid var(--border);
+    --rule-thick: 2px solid var(--border2);
+    --serif:    'Playfair Display', 'Georgia', 'Times New Roman', serif;
+    --sans:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper); color: var(--ink);
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.008) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.006) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    padding: 32px 0 20px; text-align: center;
+    border-bottom: var(--rule-thick);
+    margin-bottom: 28px;
+  }
+  .masthead-tag {
+    font-family: var(--sans); font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.18em; color: var(--burgundy);
+    margin-bottom: 8px;
+  }
+  .masthead h1 {
+    font-family: var(--serif); font-size: 2.2rem; font-weight: 700;
+    letter-spacing: -0.01em; color: var(--ink); line-height: 1.2;
+    margin-bottom: 4px;
+  }
+  .masthead .subtitle {
+    font-family: var(--serif); font-style: italic; font-size: 1rem;
+    color: var(--ink2); font-weight: 500;
+  }
+  .masthead .byline {
+    margin-top: 14px; font-size: 0.68rem; color: var(--ink3);
+    text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600;
+    font-family: var(--sans);
+  }
+  .masthead .byline span { color: var(--navy); }
+
+  /* ── SECTION HEADINGS ── */
+  .section-title {
+    font-family: var(--serif); font-size: 1.05rem; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.005em;
+    padding-bottom: 8px; border-bottom: var(--rule);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title .marker {
+    width: 4px; height: 18px; background: var(--navy); flex-shrink: 0;
+  }
+
+  /* ── KPI ROW ── */
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border); border: var(--rule);
+    margin-bottom: 28px;
+  }
+  .kpi-card {
+    background: var(--surface); padding: 18px 20px;
+    transition: background 0.2s;
+  }
+  .kpi-card:hover { background: #fcfaf7; }
+  .kpi-label {
+    font-family: var(--sans); font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink3);
+    margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-family: var(--serif); font-size: 1.8rem; font-weight: 700;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+    line-height: 1.1; letter-spacing: -0.01em;
+  }
+  .kpi-sub {
+    font-size: 0.68rem; color: var(--ink3); margin-top: 3px; font-weight: 500;
+  }
+  .kpi-card.accent-navy .kpi-value { color: var(--navy); }
+  .kpi-card.accent-burgundy .kpi-value { color: var(--burgundy); }
+  .kpi-card.accent-teal .kpi-value { color: var(--teal); }
+  .kpi-card.accent-gold .kpi-value { color: var(--gold); }
+
+  /* ── CHART CARD ── */
+  .chart-card {
+    background: var(--surface); border: var(--rule);
+    margin-bottom: 28px;
+  }
+  .chart-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 10px; flex-wrap: wrap; gap: 10px;
+    border-bottom: var(--rule);
+  }
+  .chart-card-header h2 {
+    font-family: var(--serif); font-size: 0.95rem; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.005em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chart-card-header h2 .indicator {
+    width: 8px; height: 8px; background: var(--navy); flex-shrink: 0;
+  }
+  .chart-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+  .ctrl-btn {
+    padding: 5px 12px; border-radius: 3px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--ink2); font-size: 0.68rem;
+    font-weight: 600; cursor: pointer; transition: all 0.15s;
+    font-family: var(--sans); display: flex; align-items: center; gap: 4px; line-height: 1;
+  }
+  .ctrl-btn:hover { background: var(--cream); border-color: var(--border2); color: var(--ink); }
+  .ctrl-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .ctrl-btn.play-btn { min-width: 70px; justify-content: center; }
+  .ctrl-btn svg.ico { width: 12px; height: 12px; flex-shrink: 0; }
+
+  .ctrl-group { display: flex; border: 1px solid var(--border); }
+  .ctrl-group button {
+    padding: 5px 9px; border: none; cursor: pointer; font-size: 0.63rem;
+    font-weight: 600; color: var(--ink3); background: transparent;
+    transition: all 0.15s; font-family: var(--sans);
+    border-right: 1px solid var(--border);
+  }
+  .ctrl-group button:last-child { border-right: none; }
+  .ctrl-group button:hover { color: var(--ink); background: var(--cream); }
+  .ctrl-group button.active { background: var(--navy); color: #fff; }
+
+  .chart-body { position: relative; padding: 8px 12px 4px; min-height: 440px; }
+  #chart { width: 100%; }
+  #chart svg { display: block; width: 100%; }
+  #chart svg text { fill: var(--ink2); }
+  #chart svg [aria-label="x-axis tick label"] text,
+  #chart svg [aria-label="y-axis tick label"] text { fill: var(--ink3); font-size: 10px; }
+  #chart svg [aria-label="x-axis label"] text,
+  #chart svg [aria-label="y-axis label"] text { fill: var(--ink2); font-size: 11px; font-weight: 600; }
+  #chart svg [aria-label="grid"] line { stroke: var(--border); stroke-opacity: 0.8; }
+
+  .chart-progress { padding: 8px 20px 14px; }
+  .chart-progress-bar {
+    width: 100%; height: 3px; background: var(--border);
+    overflow: hidden; cursor: pointer;
+  }
+  .chart-progress-fill {
+    height: 100%; background: var(--navy); transition: width 0.06s linear; width: 0;
+  }
+
+  /* Tooltip */
+  #chart-tooltip {
+    position: absolute; top: 0; left: 0; pointer-events: none; opacity: 0;
+    background: var(--surface); border: 1px solid var(--border2);
+    padding: 9px 13px; font-size: 0.73rem; color: var(--ink); z-index: 10;
+    transition: opacity 0.12s; box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    white-space: nowrap; font-family: var(--sans);
+  }
+  #chart-tooltip.visible { opacity: 1; }
+  #chart-tooltip .tt-year { color: var(--navy); font-weight: 700; font-size: 0.8rem; font-family: var(--serif); }
+  #chart-tooltip .tt-pop { color: var(--burgundy); font-weight: 700; }
+
+  /* ── INFO ROW ── */
+  .info-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--border); border: var(--rule);
+    margin-bottom: 28px;
+  }
+  .info-card {
+    background: var(--surface); padding: 22px 24px;
+  }
+  .info-card h3 {
+    font-family: var(--serif); font-size: 0.88rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 12px; letter-spacing: -0.005em;
+  }
+  .info-card p {
+    font-size: 0.78rem; color: var(--ink2); line-height: 1.65; margin-bottom: 10px;
+  }
+  .info-card p:last-child { margin-bottom: 0; }
+  .info-card .em { color: var(--navy); font-weight: 600; }
+  .info-card .em-b { color: var(--burgundy); font-weight: 600; }
+
+  .info-card ul { list-style: none; padding: 0; }
+  .info-card ul li {
+    font-size: 0.74rem; color: var(--ink2); padding: 7px 0;
+    border-bottom: 1px solid var(--border); line-height: 1.55;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .info-card ul li:last-child { border-bottom: none; }
+  .info-card ul li .diamond {
+    color: var(--navy); flex-shrink: 0; font-size: 0.5rem; margin-top: 5px;
+  }
+
+  /* ── MILESTONES ── */
+  .milestones-section { margin-bottom: 28px; }
+  .milestones-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 1px; background: var(--border); border: var(--rule);
+  }
+  .milestone {
+    background: var(--surface); padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 9px;
+    transition: background 0.3s;
+  }
+  .milestone.reached { background: #fdfcfa; }
+  .milestone .ms-marker {
+    width: 6px; height: 6px; margin-top: 5px; flex-shrink: 0;
+    background: var(--border2); transition: all 0.4s;
+  }
+  .milestone.reached .ms-marker { background: var(--navy); }
+  .milestone .ms-icon {
+    width: 20px; height: 20px; flex-shrink: 0; display: flex;
+    align-items: center; justify-content: center; color: var(--ink3);
+    transition: color 0.3s;
+  }
+  .milestone .ms-icon svg { width: 14px; height: 14px; }
+  .milestone.reached .ms-icon { color: var(--navy); }
+  .milestone .ms-content { flex: 1; min-width: 0; }
+  .milestone .ms-year {
+    font-family: var(--serif); font-size: 0.72rem; color: var(--ink3);
+    font-weight: 600; letter-spacing: -0.005em;
+    transition: color 0.3s;
+  }
+  .milestone.reached .ms-year { color: var(--navy); }
+  .milestone .ms-label {
+    font-size: 0.66rem; color: var(--ink2); line-height: 1.35; margin-top: 1px;
+    transition: color 0.3s;
+  }
+  .milestone.reached .ms-label { color: var(--ink); }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    text-align: center; padding: 20px 0 28px;
+    border-top: var(--rule); margin-top: 8px;
+  }
+  .page-footer p {
+    font-size: 0.64rem; color: var(--ink3); font-family: var(--sans);
+  }
+  .page-footer a { color: var(--navy); text-decoration: none; font-weight: 600; }
+  .page-footer a:hover { text-decoration: underline; }
+  .page-footer .separator { color: var(--border2); margin: 0 8px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .info-row { grid-template-columns: 1fr; }
+    .masthead h1 { font-size: 1.6rem; }
+  }
+  @media (max-width: 600px) {
+    .container { padding: 0 14px; }
+    .kpi-row { grid-template-columns: 1fr 1fr; }
+    .kpi-card { padding: 14px; }
+    .kpi-value { font-size: 1.4rem; }
+    .chart-card-header { flex-direction: column; align-items: flex-start; }
+    .milestones-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .masthead h1 { font-size: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ MASTHEAD ═══ -->
+<header class="masthead">
+  <div class="container">
+    <div class="masthead-tag">Demographic Analysis</div>
+    <h1>The Great Acceleration</h1>
+    <p class="subtitle">World population from the Neolithic to the present day</p>
+    <p class="byline"><span>H Heuristics</span> &nbsp;·&nbsp; July 2025</p>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- ═══ KPI ROW ═══ -->
+<div class="kpi-row">
+  <div class="kpi-card accent-navy">
+    <div class="kpi-label">Current Year</div>
+    <div class="kpi-value" id="kpi-year">10,000 BC</div>
+    <div class="kpi-sub" id="kpi-era">Prehistory</div>
+  </div>
+  <div class="kpi-card accent-burgundy">
+    <div class="kpi-label">Estimated Population</div>
+    <div class="kpi-value" id="kpi-pop">2M</div>
+    <div class="kpi-sub" id="kpi-pop-pct">0.02% of today&rsquo;s total</div>
+  </div>
+  <div class="kpi-card accent-teal">
+    <div class="kpi-label">Growth Since 1800</div>
+    <div class="kpi-value" id="kpi-growth">—</div>
+    <div class="kpi-sub">from ~1 billion to 8+ billion</div>
+  </div>
+  <div class="kpi-card accent-gold">
+    <div class="kpi-label">Next Billion Added</div>
+    <div class="kpi-value" id="kpi-next">—</div>
+    <div class="kpi-sub">at prevailing growth rates</div>
+  </div>
+</div>
+
+<!-- ═══ CHART ═══ -->
+<div class="chart-card">
+  <div class="chart-card-header">
+    <h2><span class="indicator"></span> Population Timeline</h2>
+    <div class="chart-controls">
+      <button class="ctrl-btn play-btn" id="btn-play" onclick="togglePlay()">
+        <svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span id="play-label">Play</span>
+      </button>
+      <button class="ctrl-btn" onclick="restart()">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M4 17a9 9 0 1 0-1.5-11.5L1 10"/></svg>
+        Restart
+      </button>
+      <div class="ctrl-group">
+        <button data-speed="0.5" onclick="setSpeed(0.5,this)">½</button>
+        <button class="active" data-speed="1" onclick="setSpeed(1,this)">1×</button>
+        <button data-speed="2" onclick="setSpeed(2,this)">2×</button>
+        <button data-speed="5" onclick="setSpeed(5,this)">5×</button>
+      </div>
+      <div class="ctrl-group">
+        <button class="active" data-scale="linear" onclick="setScale('linear',this)">Linear</button>
+        <button data-scale="log" onclick="setScale('log',this)">Log</button>
+      </div>
+      <button class="ctrl-btn active" id="btn-track" onclick="toggleTracking()">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span id="track-label">Track</span>
+      </button>
+    </div>
+  </div>
+  <div class="chart-body" id="chart-wrap">
+    <div id="chart"></div>
+    <div id="chart-tooltip"></div>
+  </div>
+  <div class="chart-progress">
+    <div class="chart-progress-bar" id="progress-bar">
+      <div class="chart-progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INFO PANELS ═══ -->
+<div class="info-row">
+  <div class="info-card">
+    <h3>Key Insights</h3>
+    <p>
+      For most of human history, population growth was barely perceptible. It took until <span class="em">1804</span> — roughly twelve millennia after the Agricultural Revolution — for humanity to reach its <span class="em">first billion</span>. The entire span of classical antiquity, the rise and fall of Rome, the medieval period, and the early modern era passed with global population remaining under one billion.
+    </p>
+    <p>
+      The second billion arrived in <span class="em">1927</span> — <span class="em-b">123 years</span> later. The third required only <span class="em-b">33 years</span>, arriving in 1960. Each subsequent billion added in roughly <span class="em-b">12 to 15 years</span>. The fourth through eighth billions materialised within a single human lifetime.
+    </p>
+    <p>
+      This extraordinary compression — from millennia of near-stasis to billions added per decade — represents what demographers term <span class="em">the Great Acceleration</span>. It is arguably the single most consequential transformation in the human story, reshaping every dimension of planetary life within the span of three generations.
+    </p>
+  </div>
+  <div class="info-card">
+    <h3>Sources &amp; Methodology</h3>
+    <ul>
+      <li><span class="diamond">◆</span> <strong>Ancient era (10,000 BC&ndash;1800):</strong> Estimates are drawn from the HYDE 3.3 historical population database, supplemented by Gapminder Foundation reconstructions. Margins of error widen substantially for earlier periods.</li>
+      <li><span class="diamond">◆</span> <strong>Modern era (1800&ndash;present):</strong> UN World Population Prospects (2022 revision), corroborated against national census records where available.</li>
+      <li><span class="diamond">◆</span> <strong>96 data points</strong> are sampled across 12,000 years, with denser coverage in the modern period to capture the acceleration in detail.</li>
+      <li><span class="diamond">◆</span> <strong>The time axis</strong> employs a non-linear scale: ancient millennia are compressed while the modern era is expanded, allocating nearly half the chart to the period since 1800 where the most significant change occurs. Tick labels display true years throughout.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ═══ MILESTONES ═══ -->
+<div class="milestones-section">
+  <div class="section-title"><span class="marker"></span> Historical Milestones</div>
+  <div class="milestones-grid" id="milestones-grid"></div>
+</div>
+
+</div><!-- /container -->
+
+<footer class="page-footer">
+  <div class="container">
+    <p>
+      Visualisation: <a href="https://observablehq.com/plot" target="_blank">Observable Plot</a>
+      <span class="separator">|</span>
+      Data: HYDE 3.3, UN World Population Prospects, Gapminder
+      <span class="separator">|</span>
+      <a href="https://hheuristics.com" target="_blank">H Heuristics</a> &copy; 2025
+    </p>
+  </div>
+</footer>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6"></script>
+
+<script>
+// ═══════════════════════════════════
+// POPULATION DATA
+// ═══════════════════════════════════
+const rawData = [
+  [-10000,0.002],[-9000,0.003],[-8000,0.005],[-7000,0.007],
+  [-6000,0.010],[-5000,0.018],[-4000,0.028],[-3500,0.035],
+  [-3000,0.045],[-2500,0.055],[-2000,0.070],[-1500,0.088],
+  [-1000,0.115],[-800,0.130],[-600,0.145],[-500,0.150],
+  [-400,0.160],[-300,0.175],[-200,0.190],[-100,0.210],
+  [1,0.230],[100,0.240],[200,0.245],[300,0.240],
+  [400,0.237],[500,0.236],[600,0.213],[700,0.226],
+  [800,0.240],[900,0.269],[1000,0.295],[1100,0.353],
+  [1200,0.393],[1250,0.417],[1300,0.392],[1340,0.443],
+  [1350,0.370],[1400,0.375],[1500,0.461],[1550,0.495],
+  [1600,0.554],[1650,0.516],[1700,0.603],[1750,0.771],
+  [1800,0.954],[1810,1.000],[1850,1.241],[1900,1.654],
+  [1910,1.777],[1920,1.912],[1930,2.082],[1940,2.307],
+  [1950,2.525],[1955,2.758],[1960,3.039],[1965,3.346],
+  [1970,3.707],[1975,4.084],[1980,4.448],[1985,4.856],
+  [1990,5.320],[1995,5.744],[2000,6.144],[2005,6.542],
+  [2010,6.957],[2015,7.380],[2020,7.795],[2023,8.045],
+];
+
+// ═══════════════════════════════════
+// NON-LINEAR TIME TRANSFORM
+// ═══════════════════════════════════
+function transformYear(year) {
+  if (year <= 0) return (year + 10000) / 10000 * 3.0;
+  if (year <= 1800) return 3.0 + (year / 1800) * 2.5;
+  return 5.5 + ((year - 1800) / (2023 - 1800)) * 4.5;
+}
+const TX_MIN = transformYear(-10000), TX_MAX = transformYear(2023);
+
+const data = rawData.map(([year, pop]) => ({
+  year, popB: pop, popM: pop * 1000,
+  xT: transformYear(year),
+}));
+
+function inverseTransform(xT) {
+  if (xT <= 3.0) return Math.round((xT / 3.0) * 10000 - 10000);
+  if (xT <= 5.5) return Math.round(((xT - 3.0) / 2.5) * 1800);
+  return Math.round(((xT - 5.5) / 4.5) * (2023 - 1800) + 1800);
+}
+
+const xTickDefs = [
+  { xT: transformYear(-10000), label: '10,000 BC' },
+  { xT: transformYear(-5000),  label: '5000 BC' },
+  { xT: transformYear(-2000),  label: '2000 BC' },
+  { xT: transformYear(-500),   label: '500 BC' },
+  { xT: transformYear(1),      label: '1 AD' },
+  { xT: transformYear(500),    label: '500' },
+  { xT: transformYear(1000),   label: '1000' },
+  { xT: transformYear(1500),   label: '1500' },
+  { xT: transformYear(1800),   label: '1800' },
+  { xT: transformYear(1900),   label: '1900' },
+  { xT: transformYear(1950),   label: '1950' },
+  { xT: transformYear(2000),   label: '2000' },
+  { xT: transformYear(2023),   label: '2023' },
+];
+
+// ═══════════════════════════════════
+// MILESTONES (with SVG icons)
+// ═══════════════════════════════════
+const popLookup = new Map(data.map(d => [d.year, d.popB]));
+
+const ICON = {
+  agriculture: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M6 6c0 3.3 2.7 6 6 6s6-2.7 6-6"/><path d="M12 12c-3.3 0-6 2.7-6 6"/><path d="M12 12c3.3 0 6 2.7 6 6"/></svg>',
+  civilization: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21V3h8v18"/><path d="M3 21h18"/><path d="M8 8h2"/><path d="M8 12h2"/><path d="M14 8h2"/><path d="M14 12h2"/></svg>',
+  classical: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/><path d="M2 12h20"/></svg>',
+  plague: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M12 14v8"/><path d="M8 8c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M8 16c0 2.2 1.8 4 4 4s4-1.8 4-4"/><line x1="6" y1="12" x2="18" y2="12"/></svg>',
+  exploration: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/></svg>',
+  industry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10l6-3 4 3 6-5v15"/><path d="M4 20h16"/></svg>',
+  population: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
+  milestone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v7"/><path d="M12 15v7"/></svg>',
+  modern: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M2 10h20"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+};
+
+const milestoneDefs = [
+  { year:-10000, label:"Agricultural Revolution begins",       icon:ICON.agriculture },
+  { year:-3000,  label:"Bronze Age civilisations emerge",       icon:ICON.civilization },
+  { year:-500,   label:"Classical antiquity (~150 million)",    icon:ICON.classical },
+  { year:1,      label:"Roman Empire at its height (~230M)",    icon:ICON.classical },
+  { year:1350,   label:"Black Death — population contracts",    icon:ICON.plague },
+  { year:1500,   label:"Age of Discovery begins",               icon:ICON.exploration },
+  { year:1800,   label:"Industrial Revolution (~1 billion)",    icon:ICON.industry },
+  { year:1927,   label:"Two billion milestone",                 icon:ICON.population },
+  { year:1960,   label:"Three billion — Green Revolution",      icon:ICON.milestone },
+  { year:1974,   label:"Four billion milestone",                icon:ICON.milestone },
+  { year:1987,   label:"Five billion milestone",                icon:ICON.modern },
+  { year:1999,   label:"Six billion milestone",                 icon:ICON.modern },
+  { year:2011,   label:"Seven billion milestone",               icon:ICON.modern },
+  { year:2022,   label:"Eight billion — the present day",       icon:ICON.target },
+];
+
+const milestones = milestoneDefs.map(m => ({
+  ...m,
+  popB: popLookup.get(m.year) ?? (() => { let b=data[0],bd=Infinity; for(const d of data){const dist=Math.abs(d.year-m.year);if(dist<bd){bd=dist;b=d;}} return b.popB; })(),
+  xT: transformYear(m.year),
+}));
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let animFrame = 0, currentIndex = 0, isPlaying = false, speed = 1;
+let currentScale = 'linear', trackingMode = true;
+const TOTAL_FRAMES = data.length - 1;
+
+// ═══════════════════════════════════
+// DOM
+// ═══════════════════════════════════
+const chartEl = document.getElementById('chart');
+const chartWrap = document.getElementById('chart-wrap');
+const tooltipEl = document.getElementById('chart-tooltip');
+const progressFill = document.getElementById('progress-fill');
+const playLabel = document.getElementById('play-label');
+const trackLabel = document.getElementById('track-label');
+
+// ═══════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════
+function formatYear(y) {
+  if (y <= 0) return Math.abs(y).toLocaleString() + ' BC';
+  if (y < 1000) return y + ' AD';
+  return y.toLocaleString();
+}
+function getEra(year) {
+  if (year < -3000) return 'Prehistory';
+  if (year < 476) return 'Ancient Era';
+  if (year < 1500) return 'Medieval Era';
+  if (year < 1800) return 'Early Modern';
+  if (year < 1950) return 'Industrial Era';
+  return 'The Great Acceleration';
+}
+
+// ═══════════════════════════════════
+// RENDER
+// ═══════════════════════════════════
+function renderChart(sliceEnd) {
+  const visible = data.slice(0, sliceEnd + 1);
+  if (!visible.length) return;
+  const last = visible[visible.length - 1];
+
+  // KPIs
+  document.getElementById('kpi-year').textContent = formatYear(last.year);
+  document.getElementById('kpi-era').textContent = getEra(last.year);
+  document.getElementById('kpi-pop').textContent = last.popB >= 1
+    ? last.popB.toFixed(2) + ' bn'
+    : last.popM.toFixed(0) + ' m';
+  document.getElementById('kpi-pop-pct').textContent = ((last.popB / 8.045) * 100).toFixed(1) + '% of today\u2019s total';
+  if (last.year >= 1800) {
+    const since = data.find(d => d.year === 1800);
+    document.getElementById('kpi-growth').textContent = since ? (last.popB / since.popB).toFixed(1) + '\u00d7' : '\u2014';
+  } else {
+    document.getElementById('kpi-growth').textContent = '\u2014';
+  }
+  document.getElementById('kpi-next').textContent = last.year >= 1950 ? '~12\u201314 years' : '\u2014';
+
+  progressFill.style.width = (sliceEnd / TOTAL_FRAMES * 100).toFixed(1) + '%';
+
+  document.querySelectorAll('.milestone').forEach(el => {
+    el.classList.toggle('reached', parseInt(el.dataset.year) <= last.year);
+  });
+
+  // Domains
+  let xDomain, xTicks;
+  if (trackingMode) {
+    const W = 3.0;
+    let l = last.xT - W * 0.7, r = last.xT + W * 0.3;
+    if (l < TX_MIN) { l = TX_MIN; r = l + W; }
+    if (r > TX_MAX) { r = TX_MAX; l = r - W; }
+    if (l < TX_MIN) l = TX_MIN;
+    xDomain = [l, r]; xTicks = undefined;
+  } else {
+    xDomain = [TX_MIN, TX_MAX];
+    xTicks = xTickDefs.map(d => d.xT);
+  }
+
+  let yDomain, yLabel, yTicks, yTickFmt;
+  if (currentScale === 'log') {
+    yDomain = [0.001, 10]; yLabel = 'Population (billions, logarithmic scale)';
+    yTicks = [0.001, 0.01, 0.1, 1, 10];
+    yTickFmt = d => d >= 1 ? d+' bn' : d >= 0.01 ? (d*1000).toFixed(0)+' m' : (d*1e6).toFixed(0)+' k';
+  } else {
+    yDomain = [0, 8.5]; yLabel = 'Population (billions)';
+    yTicks = [0,1,2,3,4,5,6,7,8];
+    yTickFmt = d => d >= 1 ? d+' bn' : d === 0 ? '0' : (d*1000).toFixed(0)+' m';
+  }
+  const yVal = (d) => currentScale === 'log' ? Math.max(d.popB, 0.001) : d.popB;
+
+  const plot = Plot.plot({
+    width: chartEl.clientWidth || 960,
+    height: Math.max(420, Math.min(540, window.innerHeight * 0.50)),
+    marginLeft: 68, marginRight: 32, marginTop: 10, marginBottom: 42,
+    style: {
+      background: 'transparent', color: '#1c1a17', fontSize: '10.5px',
+      fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif",
+      overflow: 'visible',
+    },
+    x: {
+      label: null, domain: xDomain, ticks: xTicks,
+      tickFormat: d => {
+        if (!trackingMode) { const m = xTickDefs.find(t => Math.abs(t.xT - d) < 0.001); if (m) return m.label; }
+        return formatYear(inverseTransform(d));
+      },
+      grid: true,
+    },
+    y: {
+      label: yLabel, domain: yDomain, ticks: yTicks,
+      tickFormat: yTickFmt, grid: true,
+      labelAnchor: 'center', labelOffset: 48,
+      ...(currentScale === 'log' ? { type: 'log' } : { zero: true }),
+    },
+    marks: [
+      Plot.areaY(visible, { x:'xT', y: yVal, fill:'url(#areaGradient)', fillOpacity:0.45, curve:'catmull-rom' }),
+      Plot.lineY(visible, { x:'xT', y: yVal, stroke:'#1a3a5c', strokeWidth:2.5, curve:'catmull-rom' }),
+      Plot.lineY(visible, { x:'xT', y: yVal, stroke:'#1a3a5c', strokeWidth:7, strokeOpacity:0.08, curve:'catmull-rom' }),
+      Plot.dot([last], { x:'xT', y: yVal, fill:'#8b1a2b', stroke:'#fefdfb', strokeWidth:2, r:5.5 }),
+      Plot.dot([last], { x:'xT', y: yVal, fill:'none', stroke:'#8b1a2b', strokeWidth:1.5, strokeOpacity:0.25, r:12 }),
+      ...(() => {
+        const reached = milestones.filter(m => m.year <= last.year);
+        return reached.length ? [Plot.dot(reached, {
+          x:'xT', y: d => currentScale==='log'?Math.max(d.popB,0.001):d.popB,
+          fill:'#1a3a5c', stroke:'#fefdfb', strokeWidth:0.8, r:2.8, opacity:0.85,
+        })] : [];
+      })(),
+      Plot.ruleX([last.xT], { stroke:'#8b1a2b', strokeWidth:0.8, strokeOpacity:0.18, strokeDasharray:'6 4' }),
+    ],
+  });
+
+  // Gradient
+  const svg = plot.querySelector('svg');
+  if (svg && !svg.querySelector('#areaGradient')) {
+    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    defs.innerHTML = `<linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3a5c" stop-opacity="0.45"/>
+      <stop offset="35%" stop-color="#1a3a5c" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#1a3a5c" stop-opacity="0.01"/>
+    </linearGradient>`;
+    svg.insertBefore(defs, svg.firstChild);
+  }
+  chartEl.replaceChildren(plot);
+}
+
+// ═══════════════════════════════════
+// ANIMATION
+// ═══════════════════════════════════
+let lastFrameTime = 0;
+function getFrameDelay(year) {
+  if (year < 1800) return 200;
+  if (year < 1950) return 300;
+  if (year < 2000) return 400;
+  return 500;
+}
+function animationStep(ts) {
+  if (!isPlaying) return;
+  if (ts - lastFrameTime < getFrameDelay(data[currentIndex]?.year ?? -10000) / speed) {
+    animFrame = requestAnimationFrame(animationStep); return;
+  }
+  lastFrameTime = ts; currentIndex++;
+  if (currentIndex > TOTAL_FRAMES) { currentIndex = TOTAL_FRAMES; pause(); return; }
+  renderChart(currentIndex);
+  animFrame = requestAnimationFrame(animationStep);
+}
+
+// ═══════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════
+function play() {
+  if (currentIndex >= TOTAL_FRAMES) currentIndex = 0;
+  isPlaying = true; playLabel.textContent = 'Pause';
+  document.getElementById('btn-play').classList.add('active');
+  document.querySelector('#btn-play .ico').innerHTML = '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
+  lastFrameTime = performance.now(); renderChart(currentIndex);
+  animFrame = requestAnimationFrame(animationStep);
+}
+function pause() {
+  isPlaying = false; playLabel.textContent = 'Play';
+  document.getElementById('btn-play').classList.remove('active');
+  document.querySelector('#btn-play .ico').innerHTML = '<path d="M8 5v14l11-7z"/>';
+  cancelAnimationFrame(animFrame);
+}
+function togglePlay() { isPlaying ? pause() : play(); }
+function restart() { pause(); currentIndex = 0; renderChart(0); }
+function setSpeed(s, btn) {
+  speed = s;
+  document.querySelectorAll('.ctrl-group [data-speed]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function setScale(scale, btn) {
+  currentScale = scale;
+  document.querySelectorAll('.ctrl-group [data-scale]').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderChart(currentIndex);
+}
+function toggleTracking() {
+  trackingMode = !trackingMode;
+  const btn = document.getElementById('btn-track');
+  if (trackingMode) { btn.classList.add('active'); trackLabel.textContent = 'Track'; }
+  else { btn.classList.remove('active'); trackLabel.textContent = 'Overview'; }
+  renderChart(currentIndex);
+}
+document.getElementById('btn-track').classList.add('active');
+
+// ═══════════════════════════════════
+// MILESTONE BUILDER
+// ═══════════════════════════════════
+(function() {
+  const grid = document.getElementById('milestones-grid');
+  milestones.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'milestone'; el.dataset.year = m.year;
+    el.innerHTML = `<div class="ms-marker"></div><div class="ms-icon">${m.icon}</div><div class="ms-content"><div class="ms-year">${formatYear(m.year)}</div><div class="ms-label">${m.label}</div></div>`;
+    grid.appendChild(el);
+  });
+})();
+
+// ═══════════════════════════════════
+// PROGRESS BAR
+// ═══════════════════════════════════
+document.getElementById('progress-bar').addEventListener('click', function(e) {
+  const idx = Math.round(((e.clientX - this.getBoundingClientRect().left) / this.offsetWidth) * TOTAL_FRAMES);
+  pause(); currentIndex = Math.max(0, Math.min(TOTAL_FRAMES, idx)); renderChart(currentIndex);
+});
+
+// ═══════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════
+document.addEventListener('keydown', e => {
+  switch(e.key) {
+    case ' ': e.preventDefault(); togglePlay(); break;
+    case 'ArrowRight': e.preventDefault(); pause(); currentIndex = Math.min(TOTAL_FRAMES, currentIndex+1); renderChart(currentIndex); break;
+    case 'ArrowLeft': e.preventDefault(); pause(); currentIndex = Math.max(0, currentIndex-1); renderChart(currentIndex); break;
+    case 'r': e.preventDefault(); restart(); break;
+    case 'l': e.preventDefault(); setScale('linear', document.querySelector('[data-scale="linear"]')); break;
+    case 'g': e.preventDefault(); setScale('log', document.querySelector('[data-scale="log"]')); break;
+    case 't': e.preventDefault(); toggleTracking(); break;
+  }
+});
+
+// ═══════════════════════════════════
+// TOOLTIP
+// ═══════════════════════════════════
+chartWrap.addEventListener('mousemove', function(e) {
+  const rect = chartEl.getBoundingClientRect();
+  const plotW = rect.width, ml = 68, mr = 32, chartW = plotW - ml - mr;
+  const xNorm = (e.clientX - rect.left - ml) / chartW;
+  if (xNorm < 0 || xNorm > 1) { tooltipEl.classList.remove('visible'); return; }
+
+  let xMin, xMax;
+  if (trackingMode) {
+    const last = data[currentIndex]; const W = 3.0;
+    let l = last.xT - W*0.7, r = l + W;
+    if (l < TX_MIN) { l = TX_MIN; r = l + W; }
+    if (r > TX_MAX) { r = TX_MAX; l = r - W; }
+    if (l < TX_MIN) l = TX_MIN;
+    xMin = l; xMax = r;
+  } else { xMin = TX_MIN; xMax = TX_MAX; }
+  const year = inverseTransform(xMin + xNorm * (xMax - xMin));
+
+  let closest = data[0], cd = Infinity;
+  for (const d of data) { const dist = Math.abs(d.year - year); if (dist < cd) { cd = dist; closest = d; } }
+
+  const popStr = closest.popB >= 1 ? closest.popB.toFixed(2) + ' billion' : closest.popM.toFixed(1) + ' million';
+  tooltipEl.innerHTML = '<span class="tt-year">' + formatYear(closest.year) + '</span><br><span class="tt-pop">' + popStr + '</span> people';
+  tooltipEl.classList.add('visible');
+
+  let tx = e.clientX - chartWrap.getBoundingClientRect().left + 14;
+  let ty = e.clientY - chartWrap.getBoundingClientRect().top - 48;
+  if (tx + 190 > plotW) tx -= 200; if (ty < 8) ty = 8;
+  tooltipEl.style.left = tx+'px'; tooltipEl.style.top = ty+'px';
+});
+chartWrap.addEventListener('mouseleave', () => tooltipEl.classList.remove('visible'));
+
+// ═══════════════════════════════════
+// RESIZE
+// ═══════════════════════════════════
+let rt;
+window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => renderChart(currentIndex), 150); });
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+renderChart(0);
+</script>
+</body>
+</html>
